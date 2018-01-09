@@ -2,11 +2,20 @@ const exec = require('child_process').exec;
 const fs = require('fs');
 
 process.chdir(__dirname);
+process.chdir('..');
 
-let initPromise = Promise.resolve();
+let initPromise = promiseExec('ng build').then(() => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, 1000);
+    });
+});
 if (!fs.existsSync('../master')) {
     fs.mkdirSync('../master');
-    initPromise = promiseExec('git init').then(() => {
+    initPromise.then(() => {
+        return promiseExec('git init');
+    }).then(() => {
         return promiseExec('git remote add origin ..');
     }).then(() => {
         return promiseExec('git fetch');
@@ -15,7 +24,7 @@ if (!fs.existsSync('../master')) {
     });
 }
 
-process.chdir('../master');
+process.chdir('master');
 
 initPromise.then(() => {
     files = fs.readdirSync('.');
@@ -33,12 +42,17 @@ initPromise.then(() => {
 }).then(() => {
     return promiseExec('git add .');
 }).then(() => {
-    return promiseExec('git commit -a -m "Deploy '+ new Date().valueOf() +'"');
+    return promiseExec('git commit -a -m "Deploy '+ new Date().valueOf() +'"').catch(() => {});
+}).then(() => {
+    return promiseExec('git push');
+}).then(() => {
+    process.chdir('..');
+}).then(() => {
+    return promiseExec('git push origin master');
 }).catch((error) => {
     console.error(error);
     process.exit(1);
 });
-
 
 function promiseExec(command) {
     return new Promise((resolve, reject) => {
