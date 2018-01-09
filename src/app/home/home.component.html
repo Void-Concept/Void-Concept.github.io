@@ -1,0 +1,14 @@
+<h1>
+  Welcome
+</h1>
+<p>
+  To my super ugly site. I'll clean it up and style it eventually...I will...I won't...
+</p>
+
+<h2>
+  Projects
+</h2>
+
+<div *ngFor='let project of projects'>
+  <label>* <a routerLink='/{{project.route}}'>{{ project.title }}</a></label>
+</div>

@@ -1,0 +1,8 @@
+<h1>
+    Minecraft Tools
+</h1>
+
+<div *ngFor='let project of projects'>
+    <label>* <a routerLink='/minecraft/{{project.route}}'>{{ project.title }}</a></label>
+    <!-- {{project.route}} -->
+</div>
